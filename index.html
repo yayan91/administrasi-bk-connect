@@ -2169,24 +2169,31 @@
                 doc.text('JURNAL KEGIATAN HARIAN', doc.internal.pageSize.width / 2, yPos, { align: 'center' });
                 yPos += 10;
                 
+                const data = [
+                    ['Tanggal', formatDateIndonesian(journal.tanggal)],
+                    ['Semester', journal.semester || ''],
+                    ['Uraian Kegiatan', journal.kegiatan || ''],
+                    ['Catatan Kejadian', journal.catatan || ''],
+                    ['Tindak Lanjut', journal.tindakLanjut || ''],
+                    ['Keterangan', journal.keterangan || '']
+                ];
                  doc.autoTable({
                     startY: yPos,
-                    body: [
-                        ['Tanggal', `: ${formatDateIndonesian(journal.tanggal)}`],
-                        ['Semester', `: ${journal.semester || ''}`],
-                        ['Uraian Kegiatan', `: ${journal.kegiatan || ''}`],
-                        ['Catatan Kejadian', `: ${journal.catatan || ''}`],
-                        ['Tindak Lanjut', `: ${journal.tindakLanjut || ''}`],
-                        ['Keterangan', `: ${journal.keterangan || ''}`]
-                    ],
-                    theme: 'plain', styles: { fontSize: 10 },
-                    columnStyles: { 0: { fontStyle: 'bold', cellWidth: 50 } }
+                    head: [['Deskripsi', 'Keterangan']],
+                    body: data,
+                    theme: 'grid',
+                    headStyles: { fillColor: [71, 85, 105] }, // slate-600
+                    styles: { fontSize: 10 },
+                    columnStyles: { 0: { fontStyle: 'bold' } }
                 });
 
-                let signY = doc.autoTable.previous.finalY + 25;
+                let signY = doc.autoTable.previous.finalY + 15;
                 const centerX = doc.internal.pageSize.width / 2;
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
                 doc.text(`${schoolProfile.asalSekolah || '..............'}, ${formatDateIndonesian(journal.tanggal)}`, centerX, signY, { align: 'center' });
                 doc.text(`Guru BK,`, centerX, signY + 7, { align: 'center' }); signY += 32;
+                doc.setFontSize(10);
                 doc.setFont('helvetica', 'bold');
                 doc.text(schoolProfile.namaGuruBk || '(.......................................)', centerX, signY, { align: 'center' }); signY += 5;
                 doc.setFont('helvetica', 'normal');
@@ -2194,7 +2201,7 @@
 
                 doc.save(`Jurnal_${journal.tanggal}.pdf`);
             }
-            function exportJournalListToPDF() {
+             function exportJournalListToPDF() {
                 const { jsPDF } = window.jspdf;
                 const journals = getJournals();
                 if (journals.length === 0) {
@@ -2394,7 +2401,7 @@
                 let yPos = drawPdfHeader(doc, schoolProfile);
                 
                 doc.setFont('helvetica', 'normal');
-                doc.setFontSize(10);
+                doc.setFontSize(12);
                 doc.text(`Nomor      : ${mail.nomorSurat || '.........................'}`, 14, yPos);
                 doc.text(`${schoolProfile.asalSekolah || '..............'}, ${formatDateIndonesian(mail.tanggalSurat)}`, doc.internal.pageSize.width - 14, yPos, { align: 'right' });
                 yPos += 5;
@@ -2428,7 +2435,7 @@
 
                 doc.text('Demikian surat panggilan ini kami sampaikan, atas perhatian dan kerjasamanya kami ucapkan terima kasih.', 14, yPos);
                 
-                let signY = yPos + 25;
+                let signY = yPos + 15;
                 const pageWidth = doc.internal.pageSize.width;
                 const centerX = pageWidth / 2;
                 doc.text(`Guru BK,`, centerX, signY, { align: 'center' }); signY += 25;
@@ -2450,7 +2457,7 @@
                 if (logoKiri) doc.addImage(logoKiri, 'PNG', 15, 10, 20, 20);
                 if (logoKanan) doc.addImage(logoKanan, 'PNG', pageWidth - 35, 10, 20, 20);
 
-                doc.setFontSize(12);
+                doc.setFontSize(14);
                 doc.setFont('helvetica', 'bold');
                 const provKotaText = (schoolProfile.provinsiKota || 'PEMERINTAH PROVINSI/KOTA').toUpperCase();
                 doc.text(provKotaText, pageWidth / 2, yPos, { align: 'center' });
@@ -2488,32 +2495,37 @@
                 yPos += 10;
                 
                 const data = [
-                    ['Nama Siswa', `: ${student.namaSiswa || ''}`],
-                    ['Kelas / Semester', `: ${student.kelas || ''} / ${session.semester || ''}`],
-                    ['Tanggal Konseling', `: ${formatDateIndonesian(session.tanggal)}`],
-                    ['Pertemuan Ke-', `: ${session.ke || ''}`],
-                    ['Identifikasi Masalah', `: ${session.identifikasiMasalah || ''}`],
-                    ['Penjelasan Masalah', `: ${session.penjelasanMasalah || ''}`],
-                    ['Pendekatan / Teknik', `: ${session.pendekatan || ''} / ${session.teknik || ''}`],
-                    ['Alternatif Pemecahan', `: ${session.alternatif || ''}`],
-                    ['Hasil', `: ${session.hasil || ''}`],
-                    ['Bidang / Komponen', `: ${session.bidangBimbingan || ''} / ${session.komponenLayanan || ''}`],
-                    ['Status', `: ${session.statusKonseling || ''}`],
+                    ['Nama Siswa', student.namaSiswa || ''],
+                    ['Kelas / Semester', `${student.kelas || ''} / ${session.semester || ''}`],
+                    ['Tanggal Konseling', formatDateIndonesian(session.tanggal)],
+                    ['Pertemuan Ke-', session.ke || ''],
+                    ['Identifikasi Masalah', session.identifikasiMasalah || ''],
+                    ['Penjelasan Masalah', session.penjelasanMasalah || ''],
+                    ['Pendekatan / Teknik', `${session.pendekatan || ''} / ${session.teknik || ''}`],
+                    ['Alternatif Pemecahan', session.alternatif || ''],
+                    ['Hasil', session.hasil || ''],
+                    ['Bidang / Komponen', `${session.bidangBimbingan || ''} / ${session.komponenLayanan || ''}`],
+                    ['Status', session.statusKonseling || ''],
                 ];
 
                 doc.autoTable({
                     startY: yPos,
+                    head: [['Deskripsi', 'Keterangan']],
                     body: data,
-                    theme: 'plain',
+                    theme: 'grid',
+                    headStyles: { fillColor: [71, 85, 105] }, // slate-600
                     styles: { fontSize: 10 },
-                    columnStyles: { 0: { fontStyle: 'bold', cellWidth: 50 } }
+                    columnStyles: { 0: { fontStyle: 'bold' } }
                 });
 
-                let signY = doc.autoTable.previous.finalY + 25;
+                let signY = doc.autoTable.previous.finalY + 15;
                 const pageWidth = doc.internal.pageSize.width;
                 const centerX = pageWidth / 2;
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
                 doc.text(`${schoolProfile.asalSekolah || '..............'}, ${formatDateIndonesian(session.tanggal)}`, centerX, signY, { align: 'center' });
                 doc.text(`Guru BK,`, centerX, signY + 7, { align: 'center' }); signY += 32;
+                doc.setFontSize(10);
                 doc.setFont('helvetica', 'bold');
                 doc.text(schoolProfile.namaGuruBk || '(.......................................)', centerX, signY, { align: 'center' }); signY += 5;
                 doc.setFont('helvetica', 'normal');
@@ -2556,25 +2568,32 @@
                 doc.text('LAPORAN KONSULTASI', doc.internal.pageSize.width / 2, yPos, { align: 'center' });
                 yPos += 10;
                 
+                const data = [
+                    ['Nama Konsulti', consultation.namaKonsulti || ''],
+                    ['Status Konsulti', consultation.statusKonsulti || ''],
+                    ['Tanggal', formatDateIndonesian(consultation.tanggal)],
+                    ['Durasi', consultation.durasiKonsultasi || ''],
+                    ['Uraian Topik', consultation.uraianTopik || ''],
+                    ['Hasil Konsultasi', consultation.hasilKonsultasi || ''],
+                    ['Tindak Lanjut', consultation.followUp || '']
+                ];
                 doc.autoTable({
                     startY: yPos,
-                    body: [
-                        ['Nama Konsulti', `: ${consultation.namaKonsulti || ''}`],
-                        ['Status Konsulti', `: ${consultation.statusKonsulti || ''}`],
-                        ['Tanggal', `: ${formatDateIndonesian(consultation.tanggal)}`],
-                        ['Durasi', `: ${consultation.durasiKonsultasi || ''}`],
-                        ['Uraian Topik', `: ${consultation.uraianTopik || ''}`],
-                        ['Hasil Konsultasi', `: ${consultation.hasilKonsultasi || ''}`],
-                        ['Tindak Lanjut', `: ${consultation.followUp || ''}`]
-                    ],
-                    theme: 'plain', styles: { fontSize: 10 },
-                    columnStyles: { 0: { fontStyle: 'bold', cellWidth: 50 } }
+                    head: [['Deskripsi', 'Keterangan']],
+                    body: data,
+                    theme: 'grid',
+                    headStyles: { fillColor: [71, 85, 105] }, // slate-600
+                    styles: { fontSize: 10 },
+                    columnStyles: { 0: { fontStyle: 'bold' } }
                 });
 
-                let signY = doc.autoTable.previous.finalY + 25;
+                let signY = doc.autoTable.previous.finalY + 15;
                 const centerX = doc.internal.pageSize.width / 2;
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
                 doc.text(`${schoolProfile.asalSekolah || '..............'}, ${formatDateIndonesian(consultation.tanggal)}`, centerX, signY, { align: 'center' });
                 doc.text(`Guru BK,`, centerX, signY + 7, { align: 'center' }); signY += 32;
+                doc.setFontSize(10);
                 doc.setFont('helvetica', 'bold');
                 doc.text(schoolProfile.namaGuruBk || '(.......................................)', centerX, signY, { align: 'center' }); signY += 5;
                 doc.setFont('helvetica', 'normal');
@@ -2606,24 +2625,31 @@
                 doc.text('LAPORAN LAYANAN KLASIKAL', doc.internal.pageSize.width / 2, yPos, { align: 'center' });
                 yPos += 10;
                 
+                const data = [
+                    ['Tanggal', formatDateIndonesian(service.tanggal)],
+                    ['Sasaran', service.sasaran || ''],
+                    ['Topik', service.topik || ''],
+                    ['Bidang Layanan', service.bidangLayanan || ''],
+                    ['Tujuan', service.tujuan || ''],
+                    ['Capaian', service.capaian || '']
+                ];
                  doc.autoTable({
                     startY: yPos,
-                    body: [
-                        ['Tanggal', `: ${formatDateIndonesian(service.tanggal)}`],
-                        ['Sasaran', `: ${service.sasaran || ''}`],
-                        ['Topik', `: ${service.topik || ''}`],
-                        ['Bidang Layanan', `: ${service.bidangLayanan || ''}`],
-                        ['Tujuan', `: ${service.tujuan || ''}`],
-                        ['Capaian', `: ${service.capaian || ''}`]
-                    ],
-                    theme: 'plain', styles: { fontSize: 10 },
-                    columnStyles: { 0: { fontStyle: 'bold', cellWidth: 50 } }
+                    head: [['Deskripsi', 'Keterangan']],
+                    body: data,
+                    theme: 'grid',
+                    headStyles: { fillColor: [71, 85, 105] }, // slate-600
+                    styles: { fontSize: 10 },
+                    columnStyles: { 0: { fontStyle: 'bold' } }
                 });
 
-                let signY = doc.autoTable.previous.finalY + 25;
+                let signY = doc.autoTable.previous.finalY + 15;
                 const centerX = doc.internal.pageSize.width / 2;
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
                 doc.text(`${schoolProfile.asalSekolah || '..............'}, ${formatDateIndonesian(service.tanggal)}`, centerX, signY, { align: 'center' });
                 doc.text(`Guru BK,`, centerX, signY + 7, { align: 'center' }); signY += 32;
+                doc.setFontSize(10);
                 doc.setFont('helvetica', 'bold');
                 doc.text(schoolProfile.namaGuruBk || '(.......................................)', centerX, signY, { align: 'center' }); signY += 5;
                 doc.setFont('helvetica', 'normal');
@@ -2657,13 +2683,16 @@
                 
                 doc.autoTable({
                     startY: yPos,
+                    head: [['Deskripsi', 'Keterangan']],
                     body: [
-                        ['Tanggal', `: ${formatDateIndonesian(session.tanggal)}`],
-                        ['Aspek Layanan', `: ${session.aspekLayanan || ''}`],
-                        ['Tujuan Layanan', `: ${session.tujuanLayanan || ''}`]
+                        ['Tanggal', formatDateIndonesian(session.tanggal)],
+                        ['Aspek Layanan', session.aspekLayanan || ''],
+                        ['Tujuan Layanan', session.tujuanLayanan || '']
                     ],
-                    theme: 'plain', styles: { fontSize: 10 },
-                    columnStyles: { 0: { fontStyle: 'bold', cellWidth: 50 } }
+                    theme: 'grid',
+                    headStyles: { fillColor: [71, 85, 105] }, // slate-600
+                    styles: { fontSize: 10 },
+                    columnStyles: { 0: { fontStyle: 'bold' } }
                 });
                 yPos = doc.autoTable.previous.finalY + 10;
                 
@@ -2675,7 +2704,7 @@
                     headStyles: { fillColor: [71, 85, 105] } // slate-600
                 });
 
-                let signY = doc.autoTable.previous.finalY + 25;
+                let signY = doc.autoTable.previous.finalY + 15;
                 const centerX = doc.internal.pageSize.width / 2;
                 doc.text(`${schoolProfile.asalSekolah || '..............'}, ${formatDateIndonesian(session.tanggal)}`, centerX, signY, { align: 'center' });
                 doc.text(`Guru BK,`, centerX, signY + 7, { align: 'center' }); signY += 32;
@@ -2732,7 +2761,7 @@
                     headStyles: { fillColor: [71, 85, 105] }
                 });
 
-                let signY = doc.autoTable.previous.finalY + 25;
+                let signY = doc.autoTable.previous.finalY + 15;
                 const centerX = doc.internal.pageSize.width / 2;
                 doc.text(`${schoolProfile.asalSekolah || '..............'}, ${formatDateIndonesian(session.tanggal)}`, centerX, signY, { align: 'center' });
                 doc.text(`Guru BK,`, centerX, signY + 7, { align: 'center' }); signY += 32;
@@ -2847,7 +2876,7 @@
                     headStyles: { fillColor: [71, 85, 105] }
                 });
                 
-                let signY = doc.autoTable.previous.finalY + 25;
+                let signY = doc.autoTable.previous.finalY + 15;
                 if(doc.internal.pageSize.height < signY + 40) { doc.addPage(); signY = 20; }
 
                 const centerX = doc.internal.pageSize.width / 2;
@@ -2894,7 +2923,7 @@
                     theme: 'grid', styles: { fontSize: 9 }, headStyles: { fillColor: [71, 85, 105] }
                 });
                 
-                let signY = doc.autoTable.previous.finalY + 25;
+                let signY = doc.autoTable.previous.finalY + 15;
                 if(doc.internal.pageSize.height < signY + 40) { doc.addPage(); signY = 20; }
                 const centerX = doc.internal.pageSize.width / 2;
                 doc.setFontSize(10); doc.setFont('helvetica', 'normal');
@@ -2939,7 +2968,7 @@
                     theme: 'grid', styles: { fontSize: 9 }, headStyles: { fillColor: [71, 85, 105] }
                 });
                 
-                let signY = doc.autoTable.previous.finalY + 25;
+                let signY = doc.autoTable.previous.finalY + 15;
                 if(doc.internal.pageSize.height < signY + 40) { doc.addPage(); signY = 20; }
                 const centerX = doc.internal.pageSize.width / 2;
                 doc.setFontSize(10); doc.setFont('helvetica', 'normal');
@@ -2983,7 +3012,7 @@
                     theme: 'grid', styles: { fontSize: 9 }, headStyles: { fillColor: [71, 85, 105] }
                 });
                 
-                let signY = doc.autoTable.previous.finalY + 25;
+                let signY = doc.autoTable.previous.finalY + 15;
                 if(doc.internal.pageSize.height < signY + 40) { doc.addPage(); signY = 20; }
                 const centerX = doc.internal.pageSize.width / 2;
                 doc.setFontSize(10); doc.setFont('helvetica', 'normal');
@@ -3028,7 +3057,7 @@
                     theme: 'grid', styles: { fontSize: 9 }, headStyles: { fillColor: [71, 85, 105] }
                 });
                 
-                let signY = doc.autoTable.previous.finalY + 25;
+                let signY = doc.autoTable.previous.finalY + 15;
                 if(doc.internal.pageSize.height < signY + 40) { doc.addPage(); signY = 20; }
                 const centerX = doc.internal.pageSize.width / 2;
                 doc.setFontSize(10); doc.setFont('helvetica', 'normal');
@@ -3075,20 +3104,87 @@
                     headStyles: { fillColor: [71, 85, 105] } // slate-600
                 });
                 
-                let signY = doc.autoTable.previous.finalY + 25;
+                let signY = doc.autoTable.previous.finalY + 15;
+                if(doc.internal.pageSize.height < signY + 40) { doc.addPage(); signY = 20; }
                 const centerX = doc.internal.pageSize.width / 2;
                 doc.setFontSize(10);
                 doc.setFont('helvetica', 'normal');
                 doc.text(`${schoolProfile.asalSekolah || '..............'}, ${formatDateIndonesian(new Date())}`, centerX, signY, { align: 'center' });
                 doc.text(`Guru BK,`, centerX, signY + 7, { align: 'center' }); signY += 32;
+                doc.setFontSize(10);
                 doc.setFont('helvetica', 'bold');
                 doc.text(schoolProfile.namaGuruBk || '(.......................................)', centerX, signY, { align: 'center' }); signY += 5;
                 doc.setFont('helvetica', 'normal');
                 doc.text(`NIP. ${schoolProfile.nipGuruBk || '-'}`, centerX, signY, { align: 'center' });
-                
-                doc.save('Daftar_Siswa.pdf');
-            }
 
+                doc.save(`Daftar_Siswa.pdf`);
+            }
+            function exportGroupGuidanceToExcel(sessionId) {
+                const item = getGroupGuidanceSessions().find(s => s.id == sessionId);
+                if (!item) return;
+                const students = item.students.map(s => s.namaSiswa).join(', ');
+                const data = [{
+                    "Tanggal": item.tanggal, 
+                    "Aspek Layanan": item.aspekLayanan,
+                    "Tujuan": item.tujuanLayanan, 
+                    "Anggota": students
+                }];
+                const headers = ["Tanggal", "Aspek Layanan", "Tujuan", "Anggota"];
+                exportToExcel(data, headers, `BimbinganKelompok_${item.tanggal}`);
+            }
+            function exportGroupCounselingToPDF(sessionId) {
+                const { jsPDF } = window.jspdf;
+                const session = getGroupCounselingSessions().find(s => s.id == sessionId);
+                if (!session) return;
+                const schoolProfile = JSON.parse(localStorage.getItem('schoolProfile')) || {};
+
+                const doc = new jsPDF();
+                let yPos = drawPdfHeader(doc, schoolProfile);
+                
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text('LAPORAN KONSELING KELOMPOK', doc.internal.pageSize.width / 2, yPos, { align: 'center' });
+                yPos += 10;
+                
+                doc.autoTable({
+                    startY: yPos,
+                    head: [['Deskripsi', 'Keterangan']],
+                    body: [
+                        ['Tanggal', formatDateIndonesian(session.tanggal)],
+                        ['Identifikasi Masalah', session.identifikasiMasalah || ''],
+                        ['Hasil', session.hasil || ''],
+                        ['Status', session.status || '']
+                    ],
+                    theme: 'grid',
+                    headStyles: { fillColor: [71, 85, 105] }, // slate-600
+                    styles: { fontSize: 10 },
+                    columnStyles: { 0: { fontStyle: 'bold' } }
+                });
+                yPos = doc.autoTable.previous.finalY + 10;
+                
+                doc.autoTable({
+                    startY: yPos,
+                    head: [['No', 'Nama Siswa', 'Kelas']],
+                    body: session.students.map((s, i) => [i + 1, s.namaSiswa, s.kelas]),
+                    theme: 'grid', styles: { fontSize: 10 },
+                    headStyles: { fillColor: [71, 85, 105] }
+                });
+
+                let signY = doc.autoTable.previous.finalY + 15;
+                if(doc.internal.pageSize.height < signY + 40) { doc.addPage(); signY = 20; }
+                const centerX = doc.internal.pageSize.width / 2;
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.text(`${schoolProfile.asalSekolah || '..............'}, ${formatDateIndonesian(session.tanggal)}`, centerX, signY, { align: 'center' });
+                doc.text(`Guru BK,`, centerX, signY + 7, { align: 'center' }); signY += 32;
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'bold');
+                doc.text(schoolProfile.namaGuruBk || '(.......................................)', centerX, signY, { align: 'center' }); signY += 5;
+                doc.setFont('helvetica', 'normal');
+                doc.text(`NIP. ${schoolProfile.nipGuruBk || '-'}`, centerX, signY, { align: 'center' });
+
+                doc.save(`Konseling_Kelompok_${session.tanggal}.pdf`);
+            }
             function exportDashboardToPDF() {
                 const { jsPDF } = window.jspdf;
                 const schoolProfile = JSON.parse(localStorage.getItem('schoolProfile')) || {};
@@ -3099,14 +3195,18 @@
                 doc.setFont('helvetica', 'bold');
                 doc.text('REKAPITULASI LAYANAN BIMBINGAN DAN KONSELING', doc.internal.pageSize.width / 2, yPos, { align: 'center' });
                 yPos += 10;
-                
+
                 const students = getStudents();
-                const studentSummary = [
-                    ["Total Siswa", students.length],
-                    ["Siswa Laki-laki", students.filter(s => s.jenisKelamin === 'Laki-laki').length],
-                    ["Siswa Perempuan", students.filter(s => s.jenisKelamin === 'Perempuan').length]
-                ];
+                const totalStudents = students.length;
+                const maleStudents = students.filter(s => s.jenisKelamin === 'Laki-laki').length;
+                const femaleStudents = totalStudents - maleStudents;
                 
+                const studentSummary = [
+                    ["Total Siswa", totalStudents],
+                    ["Siswa Laki-laki", maleStudents],
+                    ["Siswa Perempuan", femaleStudents]
+                ];
+
                 doc.autoTable({
                     startY: yPos,
                     head: [['Data Siswa', 'Jumlah']],
@@ -3118,7 +3218,7 @@
                     }
                 });
                 
-                yPos += 10;
+                yPos = doc.autoTable.previous.finalY + 15;
 
                 const layananData = [
                     [1, "Konseling Individu", getCounselingSessions().length],
@@ -3141,7 +3241,7 @@
                     }
                 });
 
-                let signY = yPos + 25;
+                let signY = doc.autoTable.previous.finalY + 25;
                 if(doc.internal.pageSize.height < signY + 40) { // check if signature fits
                      doc.addPage();
                      signY = 20;
@@ -3152,6 +3252,7 @@
                 doc.setFont('helvetica', 'normal');
                 doc.text(`${schoolProfile.asalSekolah || '..............'}, ${formatDateIndonesian(new Date())}`, centerX, signY, { align: 'center' });
                 doc.text(`Guru BK,`, centerX, signY + 7, { align: 'center' }); signY += 32;
+                doc.setFontSize(10);
                 doc.setFont('helvetica', 'bold');
                 doc.text(schoolProfile.namaGuruBk || '(.......................................)', centerX, signY, { align: 'center' }); signY += 5;
                 doc.setFont('helvetica', 'normal');
@@ -3198,12 +3299,14 @@
                     columnStyles: { 0: { fontStyle: 'bold', cellWidth: 50 } }
                 });
 
-                let signY = doc.autoTable.previous.finalY + 25;
+                let signY = doc.autoTable.previous.finalY + 15;
+                if(doc.internal.pageSize.height < signY + 40) { doc.addPage(); signY = 20; }
                 const centerX = doc.internal.pageSize.width / 2;
                 doc.setFontSize(10);
                 doc.setFont('helvetica', 'normal');
                 doc.text(`${schoolProfile.asalSekolah || '..............'}, ${formatDateIndonesian(new Date())}`, centerX, signY, { align: 'center' });
                 doc.text(`Guru BK,`, centerX, signY + 7, { align: 'center' }); signY += 32;
+                doc.setFontSize(10);
                 doc.setFont('helvetica', 'bold');
                 doc.text(schoolProfile.namaGuruBk || '(.......................................)', centerX, signY, { align: 'center' }); signY += 5;
                 doc.setFont('helvetica', 'normal');
@@ -3211,8 +3314,19 @@
 
                 doc.save(`Profil_${student.namaSiswa.replace(/\s+/g, '_')}.pdf`);
             }
+            function exportGroupCounselingToExcel(sessionId) {
+                const item = getGroupCounselingSessions().find(s => s.id == sessionId);
+                if (!item) return;
+                const students = item.students.map(s => s.namaSiswa).join(', ');
+                const data = [{
+                    "Tanggal": item.tanggal, "Masalah": item.identifikasiMasalah, "Status": item.status,
+                    "Hasil": item.hasil, "Anggota": students
+                }];
+                const headers = ["Tanggal", "Masalah", "Status", "Hasil", "Anggota"];
+                exportToExcel(data, headers, `KonselingKelompok_${item.tanggal}`);
+            }
 
-            // --- FUNGSI HAPUS ---
+            // --- FUNGSI PENGHAPUSAN ---
             function confirmDeletion() {
                 if (currentItemTypeToDelete === 'student') {
                     saveStudents(getStudents().filter(s => s.id != currentItemIdToDelete));
@@ -3617,6 +3731,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 
