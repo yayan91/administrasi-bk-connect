@@ -202,6 +202,11 @@
                             <h3 class="font-bold text-3xl sm:text-4xl text-yellow-400" id="totalKontrakPerilaku">0</h3>
                             <p class="text-sm font-semibold text-slate-300 mt-2">Kontrak Perilaku</p>
                         </div>
+                        <!-- Card Surat Izin Keluar -->
+                        <div class="bg-slate-700/50 p-6 rounded-xl border border-slate-700 flex flex-col items-center justify-center text-center">
+                            <h3 class="font-bold text-3xl sm:text-4xl text-indigo-400" id="totalSuratIzinKeluar">0</h3>
+                            <p class="text-sm font-semibold text-slate-300 mt-2">Surat Izin Keluar</p>
+                        </div>
                          <!-- Card Jurnal -->
                         <div class="bg-slate-700/50 p-6 rounded-xl border border-slate-700 flex flex-col items-center justify-center text-center col-span-2 md:col-span-1">
                             <h3 class="font-bold text-3xl sm:text-4xl text-cyan-400" id="totalJurnal">0</h3>
@@ -851,6 +856,7 @@
                         <button id="showIncomingMailBtn" class="sub-tab-button py-2 px-6 font-semibold rounded-t-lg bg-slate-900/50 hover:bg-slate-600">Surat Masuk</button>
                         <button id="showHomeVisitBtn" class="sub-tab-button py-2 px-6 font-semibold rounded-t-lg bg-slate-900/50 hover:bg-slate-600">Kunjungan Rumah</button>
                         <button id="showBehaviorContractBtn" class="sub-tab-button py-2 px-6 font-semibold rounded-t-lg bg-slate-900/50 hover:bg-slate-600">Kontrak Perilaku</button>
+                        <button id="showStudentPermitOutBtn" class="sub-tab-button py-2 px-6 font-semibold rounded-t-lg bg-slate-900/50 hover:bg-slate-600">Izin Keluar</button>
                     </div>
 
                     <!-- Konten Surat Keluar -->
@@ -1022,6 +1028,46 @@
                             </div>
                         </form>
                     </div>
+
+                    <!-- Konten Surat Izin Keluar Siswa -->
+                    <div id="studentPermitOutContent" class="hidden">
+                        <div id="studentPermitOutDisplay" class="hidden">
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-2xl font-bold text-slate-100">Daftar Surat Izin Keluar Siswa</h2>
+                                <div class="flex items-center space-x-2">
+                                    <button id="printStudentPermitOutListPdfButton" class="px-4 py-2 bg-rose-600 text-white rounded-lg font-semibold hover:bg-rose-700 text-sm shadow-sm">Cetak Rekap PDF</button>
+                                    <button id="addNewStudentPermitOutButton" class="px-5 py-2 bg-amber-600 text-white rounded-lg font-semibold hover:bg-amber-700 shadow-sm">Buat Surat Izin Baru</button>
+                                </div>
+                            </div>
+                            <div class="overflow-x-auto bg-slate-800/50 rounded-lg shadow-sm border border-slate-700">
+                                <table class="w-full text-sm text-left text-slate-400">
+                                    <thead class="text-xs text-slate-400 uppercase bg-slate-700/50 font-medium"><tr><th scope="col" class="px-6 py-3">Tgl Izin</th><th scope="col" class="px-6 py-3">Nama Siswa</th><th scope="col" class="px-6 py-3">Alasan</th><th scope="col" class="px-6 py-3 text-center">Aksi</th></tr></thead>
+                                    <tbody id="studentPermitOutTableBody" class="divide-y divide-slate-700"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <form id="studentPermitOutForm" class="space-y-6">
+                            <input type="hidden" id="studentPermitOutId">
+                            <h2 id="studentPermitOutFormTitle" class="text-2xl font-bold text-slate-100 mb-2">Formulir Surat Izin Keluar Siswa</h2>
+                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div><label for="studentPermitOut_tanggalIzin" class="block text-sm font-medium text-slate-300">Tanggal Izin</label><input type="date" id="studentPermitOut_tanggalIzin" class="mt-1 block w-full rounded-md border-slate-600 bg-slate-700 p-2 border" required></div>
+                                <div><label for="studentPermitOut_durasi" class="block text-sm font-medium text-slate-300">Durasi Izin</label><input type="text" id="studentPermitOut_durasi" class="mt-1 block w-full rounded-md border-slate-600 bg-slate-700 p-2 border" placeholder="Contoh: 1 Hari / 2 Jam Pelajaran"></div>
+                             </div>
+                             <hr class="border-slate-700"/>
+                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div class="md:col-span-2"><label for="studentPermitOut_studentId" class="block text-sm font-medium text-slate-300">Pilih Siswa</label><select id="studentPermitOut_studentId" class="mt-1 block w-full rounded-md border-slate-600 bg-slate-700 p-2 border" required></select></div>
+                                <div><label for="studentPermitOut_kelas" class="block text-sm font-medium text-slate-300">Kelas</label><input type="text" id="studentPermitOut_kelas" class="mt-1 block w-full rounded-md border-slate-600 bg-slate-700 p-2 border" readonly></div>
+                             </div>
+                             <hr class="border-slate-700"/>
+                             <div><label for="studentPermitOut_alasan" class="block text-sm font-medium text-slate-300">Alasan Izin</label><textarea id="studentPermitOut_alasan" rows="3" class="mt-1 block w-full rounded-md border-slate-600 bg-slate-700 p-2 border"></textarea></div>
+                             <div><label for="studentPermitOut_keterangan" class="block text-sm font-medium text-slate-300">Keterangan Tambahan</label><textarea id="studentPermitOut_keterangan" rows="3" class="mt-1 block w-full rounded-md border-slate-600 bg-slate-700 p-2 border"></textarea></div>
+                            <div class="pt-6 flex justify-end items-center space-x-4 border-t border-slate-700 mt-8">
+                                <button type="button" id="cancelStudentPermitOutButton" class="px-6 py-2 bg-slate-600 text-slate-200 rounded-lg font-medium hover:bg-slate-500">Batal</button>
+                                <button type="submit" class="px-6 py-2 bg-amber-600 text-white rounded-lg font-semibold hover:bg-amber-700 shadow-sm">Simpan Surat Izin</button>
+                            </div>
+                        </form>
+                    </div>
                 </section>
 
 
@@ -1085,6 +1131,7 @@
     <div id="journalDetailModal" class="fixed inset-0 bg-slate-900 bg-opacity-70 overflow-y-auto h-full w-full flex items-center justify-center hidden opacity-0 z-50"></div>
     <div id="homeVisitDetailModal" class="fixed inset-0 bg-slate-900 bg-opacity-70 overflow-y-auto h-full w-full flex items-center justify-center hidden opacity-0 z-50"></div>
     <div id="behaviorContractDetailModal" class="fixed inset-0 bg-slate-900 bg-opacity-70 overflow-y-auto h-full w-full flex items-center justify-center hidden opacity-0 z-50"></div>
+    <div id="studentPermitOutDetailModal" class="fixed inset-0 bg-slate-900 bg-opacity-70 overflow-y-auto h-full w-full flex items-center justify-center hidden opacity-0 z-50"></div>
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -1142,6 +1189,7 @@
                 document.getElementById('totalJurnal').textContent = getJournals().length;
                 document.getElementById('totalKunjunganRumah').textContent = getHomeVisits().length;
                 document.getElementById('totalKontrakPerilaku').textContent = getBehaviorContracts().length;
+                document.getElementById('totalSuratIzinKeluar').textContent = getStudentPermitsOut().length;
             }
 
             function displayCurrentDate() {
@@ -1237,10 +1285,12 @@
                             document.getElementById('incomingMailContent').classList.add('hidden');
                             document.getElementById('homeVisitContent').classList.add('hidden');
                             document.getElementById('behaviorContractContent').classList.add('hidden');
+                            document.getElementById('studentPermitOutContent').classList.add('hidden');
                             document.getElementById('showOutgoingMailBtn').classList.add('active', 'bg-slate-700');
                             document.getElementById('showIncomingMailBtn').classList.remove('active', 'bg-slate-700');
                             document.getElementById('showHomeVisitBtn').classList.remove('active', 'bg-slate-700');
                             document.getElementById('showBehaviorContractBtn').classList.remove('active', 'bg-slate-700');
+                            document.getElementById('showStudentPermitOutBtn').classList.remove('active', 'bg-slate-700');
                         }
                     });
                 });
@@ -2342,10 +2392,13 @@
             function saveHomeVisits(visits) { localStorage.setItem('homeVisits', JSON.stringify(visits)); }
             function getBehaviorContracts() { return JSON.parse(localStorage.getItem('behaviorContracts')) || []; }
             function saveBehaviorContracts(contracts) { localStorage.setItem('behaviorContracts', JSON.stringify(contracts)); }
+            function getStudentPermitsOut() { return JSON.parse(localStorage.getItem('studentPermitsOut')) || []; } 
+            function saveStudentPermitsOut(permits) { localStorage.setItem('studentPermitsOut', JSON.stringify(permits)); } 
             function toggleMailOutView(showForm) { document.getElementById('mailOutForm').classList.toggle('hidden', !showForm); document.getElementById('mailOutDisplay').classList.toggle('hidden', showForm); }
             function toggleMailInView(showForm) { document.getElementById('mailInForm').classList.toggle('hidden', !showForm); document.getElementById('mailInDisplay').classList.toggle('hidden', showForm); }
             function toggleHomeVisitView(showForm) { document.getElementById('homeVisitForm').classList.toggle('hidden', !showForm); document.getElementById('homeVisitDisplay').classList.toggle('hidden', showForm); }
             function toggleBehaviorContractView(showForm) { document.getElementById('behaviorContractForm').classList.toggle('hidden', !showForm); document.getElementById('behaviorContractDisplay').classList.toggle('hidden', showForm); }
+            function toggleStudentPermitOutView(showForm) { document.getElementById('studentPermitOutForm').classList.toggle('hidden', !showForm); document.getElementById('studentPermitOutDisplay').classList.toggle('hidden', showForm); } 
 
             function renderMailOutTable() {
                 const mails = getOutgoingMail();
@@ -2389,6 +2442,17 @@
                     tableBody.innerHTML += `<tr class="hover:bg-slate-700/50"><td class="px-6 py-4">${contract.tanggal || ''}</td><td class="px-6 py-4 font-medium text-slate-200">${student.namaSiswa}</td><td class="px-6 py-4 truncate max-w-xs">${contract.deskripsiPerilaku || ''}</td><td class="px-6 py-4"><span class="px-2 py-1 text-xs font-semibold rounded-full bg-amber-200/20 text-amber-300">${contract.status || ''}</span></td><td class="px-6 py-4 text-center whitespace-nowrap"><button class="detail-behaviorContract-btn font-medium text-sky-400 hover:underline mr-3" data-id="${contract.id}">Detail</button><button class="edit-behaviorContract-btn font-medium text-amber-400 hover:underline mr-3" data-id="${contract.id}">Edit</button><button class="delete-behaviorContract-btn font-medium text-rose-400 hover:underline" data-id="${contract.id}">Hapus</button></td></tr>`;
                 });
             }
+            function renderStudentPermitOutTable() {
+                const permits = getStudentPermitsOut();
+                const students = getStudents();
+                const tableBody = document.getElementById('studentPermitOutTableBody');
+                tableBody.innerHTML = '';
+                if (permits.length === 0) { tableBody.innerHTML = '<tr><td colspan="4" class="text-center p-6 text-slate-500">Belum ada data surat izin.</td></tr>'; return; }
+                permits.forEach(permit => {
+                    const student = students.find(s => s.id == permit.studentId) || { namaSiswa: 'Siswa Dihapus' };
+                    tableBody.innerHTML += `<tr class="hover:bg-slate-700/50"><td class="px-6 py-4">${permit.tanggalIzin || ''}</td><td class="px-6 py-4 font-medium text-slate-200">${student.namaSiswa}</td><td class="px-6 py-4 truncate max-w-xs">${permit.alasan || ''}</td><td class="px-6 py-4 text-center whitespace-nowrap"><button class="detail-studentPermitOut-btn font-medium text-sky-400 hover:underline mr-3" data-id="${permit.id}">Detail</button><button class="edit-studentPermitOut-btn font-medium text-amber-400 hover:underline mr-3" data-id="${permit.id}">Edit</button><button class="delete-studentPermitOut-btn font-medium text-rose-400 hover:underline" data-id="${permit.id}">Hapus</button></td></tr>`;
+                });
+            }
             function populateMailOutStudentDropdown() {
                 const students = getStudents();
                 const selectEl = document.getElementById('mailOut_studentId');
@@ -2399,9 +2463,9 @@
                 });
                 selectEl.value = currentVal;
             }
-            function populateBehaviorContractStudentDropdown() {
+            function populateStudentPermitOutStudentDropdown() {
                 const students = getStudents();
-                const selectEl = document.getElementById('behaviorContract_studentId');
+                const selectEl = document.getElementById('studentPermitOut_studentId');
                 const currentVal = selectEl.value;
                 selectEl.innerHTML = '<option value="">Pilih Siswa...</option>';
                 students.sort((a, b) => a.namaSiswa.localeCompare(b.namaSiswa)).forEach(s => {
@@ -2422,6 +2486,11 @@
                 document.getElementById('behaviorContractForm').reset(); 
                 document.getElementById('behaviorContractId').value = ''; 
                 document.getElementById('behaviorContractFormTitle').textContent = 'Formulir Kontrak Perilaku Siswa'; 
+            }
+            function resetStudentPermitOutForm() { 
+                document.getElementById('studentPermitOutForm').reset(); 
+                document.getElementById('studentPermitOutId').value = ''; 
+                document.getElementById('studentPermitOutFormTitle').textContent = 'Formulir Surat Izin Keluar Siswa'; 
             }
 
             function handleMailOutFormSubmit(e) {
@@ -2472,6 +2541,18 @@
                 } else { contractData.id = Date.now(); contracts.push(contractData); showNotification('Kontrak perilaku berhasil disimpan!'); }
                 saveBehaviorContracts(contracts); renderBehaviorContractTable(); toggleBehaviorContractView(false); renderDashboard();
             }
+            function handleStudentPermitOutFormSubmit(e) {
+                e.preventDefault();
+                const permitId = document.getElementById('studentPermitOutId').value;
+                const permitData = {};
+                document.getElementById('studentPermitOutForm').querySelectorAll('[id^="studentPermitOut_"]').forEach(el => { permitData[el.id.replace('studentPermitOut_', '')] = el.value; });
+                let permits = getStudentPermitsOut();
+                if (permitId) {
+                    const index = permits.findIndex(v => v.id == permitId);
+                    if (index !== -1) { permits[index] = { ...permits[index], ...permitData, id: parseInt(permitId) }; showNotification('Surat izin berhasil diperbarui!'); }
+                } else { permitData.id = Date.now(); permits.push(permitData); showNotification('Surat izin berhasil disimpan!'); }
+                saveStudentPermitsOut(permits); renderStudentPermitOutTable(); toggleStudentPermitOutView(false); renderDashboard();
+            }
             function editMailOut(mailId) {
                 const mail = getOutgoingMail().find(m => m.id == mailId);
                 if (mail) {
@@ -2506,6 +2587,16 @@
                     document.getElementById('behaviorContractId').value = contract.id;
                     document.getElementById('behaviorContractFormTitle').textContent = 'Edit Kontrak Perilaku Siswa';
                     toggleBehaviorContractView(true);
+                }
+            }
+            function editStudentPermitOut(permitId) {
+                const permit = getStudentPermitsOut().find(v => v.id == permitId);
+                if (permit) {
+                    for (const key in permit) { const el = document.getElementById(`studentPermitOut_${key}`); if (el) el.value = permit[key]; }
+                    document.getElementById('studentPermitOutId').value = permit.id;
+                    document.getElementById('studentPermitOutFormTitle').textContent = 'Edit Surat Izin Keluar Siswa';
+                    document.getElementById('studentPermitOut_studentId').dispatchEvent(new Event('change'));
+                    toggleStudentPermitOutView(true);
                 }
             }
             function showMailOutDetail(mailId) {
@@ -2634,6 +2725,34 @@
                 </div>`;
                 showModal('behaviorContractDetailModal', content);
                 document.querySelector('#behaviorContractDetailModal .export-pdf-btn').addEventListener('click', () => exportBehaviorContractToPDF(contractId));
+            }
+            function showStudentPermitOutDetail(permitId) {
+                const permit = getStudentPermitsOut().find(v => v.id == permitId);
+                if(!permit) return;
+                const student = getStudents().find(s => s.id == permit.studentId) || {};
+                const content = `<div class="bg-slate-800 p-8 rounded-lg shadow-xl max-w-3xl mx-auto w-full border border-slate-700">
+                    <div class="flex justify-between items-center mb-6 border-b pb-4 border-slate-700">
+                        <h3 class="text-xl font-bold text-slate-100">Detail Surat Izin Keluar Siswa</h3>
+                        <button class="close-modal-btn text-slate-400 hover:text-white text-3xl">&times;</button>
+                    </div>
+                    <div class="space-y-4 text-sm max-h-[60vh] overflow-y-auto pr-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                           <div><strong class="font-medium text-slate-400">Nama Siswa:</strong><p class="text-slate-200 mt-1">${student.namaSiswa || '-'}</p></div>
+                           <div><strong class="font-medium text-slate-400">Kelas:</strong><p class="text-slate-200 mt-1">${student.kelas || '-'}</p></div>
+                           <div><strong class="font-medium text-slate-400">Tgl Izin:</strong><p class="text-slate-200 mt-1">${formatDateIndonesian(permit.tanggalIzin) || '-'}</p></div>
+                           <div><strong class="font-medium text-slate-400">Durasi:</strong><p class="text-slate-200 mt-1">${permit.durasi || '-'}</p></div>
+                        </div>
+                         <hr class="border-slate-700"/>
+                        <div><strong class="font-medium text-slate-400">Alasan Izin:</strong><p class="text-slate-200 mt-1 whitespace-pre-wrap">${permit.alasan || '-'}</p></div>
+                        <div><strong class="font-medium text-slate-400">Keterangan Tambahan:</strong><p class="text-slate-200 mt-1 whitespace-pre-wrap">${permit.keterangan || '-'}</p></div>
+                    </div>
+                    <div class="flex justify-end mt-8 pt-4 border-t border-slate-700 items-center space-x-3">
+                        <button class="export-pdf-btn px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 font-semibold text-sm" data-id="${permitId}">Ekspor PDF</button>
+                        <button class="close-modal-btn px-6 py-2 bg-slate-600 text-slate-200 rounded-lg hover:bg-slate-500 font-medium text-sm">Tutup</button>
+                    </div>
+                </div>`;
+                showModal('studentPermitOutDetailModal', content);
+                document.querySelector('#studentPermitOutDetailModal .export-pdf-btn').addEventListener('click', () => exportStudentPermitOutToPDF(permitId));
             }
             function populateHomeVisitStudentDropdown() {
                 const students = getStudents();
@@ -3250,6 +3369,62 @@
                 doc.save(`Kontrak_Perilaku_${student.namaSiswa}.pdf`);
             }
             
+            function exportStudentPermitOutToPDF(permitId) {
+                const { jsPDF } = window.jspdf;
+                const permit = getStudentPermitsOut().find(v => v.id == permitId);
+                if(!permit) return;
+                const student = getStudents().find(s => s.id == permit.studentId) || {};
+                const schoolProfile = JSON.parse(localStorage.getItem('schoolProfile')) || {};
+                const doc = new jsPDF();
+                let yPos = drawPdfHeader(doc, schoolProfile);
+
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text('SURAT KETERANGAN IZIN', doc.internal.pageSize.width / 2, yPos, { align: 'center' });
+                yPos += 10;
+
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                const introText = 'Yang bertanda tangan di bawah ini, Guru Bimbingan dan Konseling menerangkan bahwa:';
+                doc.text(introText, 20, yPos);
+                yPos += 10;
+                
+                doc.text(`Nama`, 30, yPos); doc.text(`: ${student.namaSiswa || '.........................'}`, 70, yPos);
+                yPos += 7;
+                doc.text(`Kelas`, 30, yPos); doc.text(`: ${student.kelas || '.........................'}`, 70, yPos);
+                yPos += 10;
+
+                const bodyText = `Benar-benar siswa tersebut telah meminta izin untuk ${permit.alasan || 'keperluan tertentu'} selama ${permit.durasi || 'waktu tertentu'} pada tanggal ${formatDateIndonesian(permit.tanggalIzin)}.`;
+                const splitBody = doc.splitTextToSize(bodyText, doc.internal.pageSize.width - 40);
+                doc.text(splitBody, 20, yPos);
+                yPos += (splitBody.length * 5) + 5;
+
+                if (permit.keterangan) {
+                    const keteranganText = `Keterangan: ${permit.keterangan}`;
+                    const splitKeterangan = doc.splitTextToSize(keteranganText, doc.internal.pageSize.width - 40);
+                    doc.text(splitKeterangan, 20, yPos);
+                    yPos += (splitKeterangan.length * 5) + 5;
+                }
+                
+                yPos += 5;
+                const closingText = `Demikian surat keterangan ini dibuat untuk dipergunakan sebagaimana mestinya.`;
+                doc.text(closingText, 20, yPos);
+                yPos += 20;
+
+                let signY = yPos;
+                if(doc.internal.pageSize.height < signY + 30) { doc.addPage(); signY = 20; }
+                const signX = doc.internal.pageSize.width - 60;
+                doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+                doc.text(`${schoolProfile.asalSekolah || '..............'}, ${formatDateIndonesian(permit.tanggalIzin)}`, signX, signY, {align: 'center'});
+                doc.text(`Guru BK,`, signX, signY + 7, {align: 'center'}); signY += 32;
+                doc.setFont('helvetica', 'bold');
+                doc.text(schoolProfile.namaGuruBk || '(.......................................)', signX, signY, {align: 'center'}); signY += 5;
+                doc.setFont('helvetica', 'normal');
+                doc.text(`NIP. ${schoolProfile.nipGuruBk || '-'}`, signX, signY, {align: 'center'});
+
+                doc.save(`Surat_Izin_${student.namaSiswa}.pdf`);
+            }
+
             function exportMailOutListToPDF() {
                 const { jsPDF } = window.jspdf;
                 const mails = getOutgoingMail();
@@ -3368,6 +3543,46 @@
                 doc.text(`NIP. ${schoolProfile.nipGuruBk || '-'}`, signX, signY, {align: 'center'});
                 
                 doc.save('Rekap_Kontrak_Perilaku.pdf');
+            }
+
+            function exportStudentPermitOutListToPDF() {
+                const { jsPDF } = window.jspdf;
+                const permits = getStudentPermitsOut();
+                if (permits.length === 0) { showNotification('Tidak ada data untuk dicetak.', true); return; }
+                const students = getStudents();
+                const schoolProfile = JSON.parse(localStorage.getItem('schoolProfile')) || {};
+                const doc = new jsPDF('l', 'mm', 'a4');
+                let yPos = drawPdfHeader(doc, schoolProfile);
+
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text('REKAPITULASI SURAT IZIN KELUAR SISWA', doc.internal.pageSize.width / 2, yPos, { align: 'center' });
+                yPos += 10;
+                
+                const tableBody = permits.map((permit, index) => {
+                    const student = students.find(s => s.id == permit.studentId) || {};
+                    return [index + 1, permit.tanggalIzin, student.namaSiswa, student.kelas, permit.durasi, permit.alasan];
+                });
+
+                doc.autoTable({
+                    startY: yPos,
+                    head: [['No', 'Tgl Izin', 'Nama Siswa', 'Kelas', 'Durasi', 'Alasan']],
+                    body: tableBody,
+                    theme: 'grid', styles: { fontSize: 9 }, headStyles: { fillColor: [71, 85, 105] }
+                });
+                
+                let signY = doc.autoTable.previous.finalY + 20;
+                if(doc.internal.pageSize.height < signY + 30) { doc.addPage(); signY = 20; }
+                const signX = doc.internal.pageSize.width - 70;
+                doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+                doc.text(`${schoolProfile.asalSekolah || '..............'}, ${formatDateIndonesian(new Date())}`, signX, signY, {align: 'center'});
+                doc.text(`Guru BK,`, signX, signY + 7, {align: 'center'}); signY += 32;
+                doc.setFont('helvetica', 'bold');
+                doc.text(schoolProfile.namaGuruBk || '(.......................................)', signX, signY, {align: 'center'}); signY += 5;
+                doc.setFont('helvetica', 'normal');
+                doc.text(`NIP. ${schoolProfile.nipGuruBk || '-'}`, signX, signY, {align: 'center'});
+                
+                doc.save('Rekap_Surat_Izin_Keluar_Siswa.pdf');
             }
 
             // --- FUNGSI UPLOAD MASSAL ---
@@ -3955,6 +4170,7 @@
                 else if (type.includes('mail')) itemText = 'data surat';
                 else if (type.includes('homeVisit')) itemText = 'laporan kunjungan rumah';
                 else if (type.includes('behaviorContract')) itemText = 'kontrak perilaku';
+                else if (type.includes('studentPermitOut')) itemText = 'surat izin keluar';
 
                 const content = `<div class="bg-slate-800 p-6 rounded-lg shadow-xl max-w-sm mx-auto border border-slate-700"><h3 class="text-lg font-bold text-slate-100 mb-4">Konfirmasi Hapus</h3><p class="text-slate-300 mb-6">Apakah Anda yakin ingin menghapus ${itemText} ini?</p><div class="flex justify-end space-x-4"><button class="cancel-modal-btn px-4 py-2 bg-slate-600 text-slate-200 rounded-lg hover:bg-slate-500">Batal</button><button id="confirmDeleteButton" class="px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700">Hapus</button></div></div>`;
                 showModal('deleteModal', content);
@@ -3976,6 +4192,7 @@
                     incomingMail: getIncomingMail(),
                     homeVisits: getHomeVisits(),
                     behaviorContracts: getBehaviorContracts(),
+                    studentPermitsOut: getStudentPermitsOut(),
                     appToken: localStorage.getItem('appToken') || '123456'
                 };
                 const dataStr = JSON.stringify(dataToBackup, null, 2);
@@ -4008,8 +4225,9 @@
                             saveIncomingMail(data.incomingMail || []);
                             saveHomeVisits(data.homeVisits || []);
                             saveBehaviorContracts(data.behaviorContracts || []);
+                            saveStudentPermitsOut(data.studentPermitsOut || []);
                             if(data.appToken) localStorage.setItem('appToken', data.appToken);
-                            loadProfileData(); renderStudentTable(); renderCounselingTable(); renderConsultationTable(); renderClassicalServiceTable(); renderGroupGuidanceTable(); renderGroupCounselingTable(); renderMailOutTable(); renderMailInTable(); renderJournalTable(); renderHomeVisitTable(); renderBehaviorContractTable();
+                            loadProfileData(); renderStudentTable(); renderCounselingTable(); renderConsultationTable(); renderClassicalServiceTable(); renderGroupGuidanceTable(); renderGroupCounselingTable(); renderMailOutTable(); renderMailInTable(); renderJournalTable(); renderHomeVisitTable(); renderBehaviorContractTable(); renderStudentPermitOutTable();
                             showNotification('Data berhasil dipulihkan.');
                             renderDashboard();
                         } else { throw new Error('Format berkas tidak valid.'); }
@@ -4240,7 +4458,8 @@
                     { btn: 'showOutgoingMailBtn', content: 'outgoingMailContent' },
                     { btn: 'showIncomingMailBtn', content: 'incomingMailContent' },
                     { btn: 'showHomeVisitBtn', content: 'homeVisitContent' },
-                    { btn: 'showBehaviorContractBtn', content: 'behaviorContractContent' }
+                    { btn: 'showBehaviorContractBtn', content: 'behaviorContractContent' },
+                    { btn: 'showStudentPermitOutBtn', content: 'studentPermitOutContent' }
                 ];
 
                 mailTabs.forEach(clickedTab => {
@@ -4267,6 +4486,10 @@
                             const contracts = getBehaviorContracts();
                             toggleBehaviorContractView(contracts.length === 0 && getStudents().length > 0);
                             populateBehaviorContractStudentDropdown();
+                        } else if (clickedTab.btn === 'showStudentPermitOutBtn') {
+                            const permits = getStudentPermitsOut();
+                            toggleStudentPermitOutView(permits.length === 0 && getStudents().length > 0);
+                            populateStudentPermitOutStudentDropdown();
                         }
                     });
                 });
@@ -4355,10 +4578,32 @@
                     }
                 });
 
+                // Listeners Surat Izin Keluar Siswa
+                document.getElementById('addNewStudentPermitOutButton').addEventListener('click', () => { resetStudentPermitOutForm(); toggleStudentPermitOutView(true); });
+                document.getElementById('studentPermitOutForm').addEventListener('submit', handleStudentPermitOutFormSubmit);
+                document.getElementById('cancelStudentPermitOutButton').addEventListener('click', () => { toggleStudentPermitOutView(false); });
+                document.getElementById('studentPermitOutTableBody').addEventListener('click', e => {
+                    const id = e.target.dataset.id;
+                    if (e.target.classList.contains('edit-studentPermitOut-btn')) editStudentPermitOut(id);
+                    if (e.target.classList.contains('delete-studentPermitOut-btn')) showDeleteConfirmation(id, 'studentPermitOut');
+                    if (e.target.classList.contains('detail-studentPermitOut-btn')) showStudentPermitOutDetail(id);
+                });
+                document.getElementById('studentPermitOut_studentId').addEventListener('change', e => {
+                    const studentId = e.target.value;
+                    const kelasInput = document.getElementById('studentPermitOut_kelas');
+                    if (studentId) {
+                        const student = getStudents().find(s => s.id == studentId);
+                        kelasInput.value = student ? student.kelas : '';
+                    } else {
+                        kelasInput.value = '';
+                    }
+                });
+
                 // Listeners untuk tombol rekap PDF baru
                 document.getElementById('printMailOutListPdfButton').addEventListener('click', exportMailOutListToPDF);
                 document.getElementById('printHomeVisitListPdfButton').addEventListener('click', exportHomeVisitListToPDF);
                 document.getElementById('printBehaviorContractListPdfButton').addEventListener('click', exportBehaviorContractListToPDF);
+                document.getElementById('printStudentPermitOutListPdfButton').addEventListener('click', exportStudentPermitOutListToPDF);
 
 
                 // Listeners Pengaturan
@@ -4397,6 +4642,7 @@
                 renderJournalTable();
                 renderHomeVisitTable();
                 renderBehaviorContractTable();
+                renderStudentPermitOutTable();
                 loadLogos();
             }
             
