@@ -2765,6 +2765,17 @@
                 selectEl.value = currentVal;
             }
 
+            function populateBehaviorContractStudentDropdown() {
+                const students = getStudents();
+                const selectEl = document.getElementById('behaviorContract_studentId');
+                const currentVal = selectEl.value;
+                selectEl.innerHTML = '<option value="">Pilih Siswa...</option>';
+                students.sort((a, b) => a.namaSiswa.localeCompare(b.namaSiswa)).forEach(s => {
+                    selectEl.innerHTML += `<option value="${s.id}">${s.namaSiswa} - ${s.kelas}</option>`;
+                });
+                selectEl.value = currentVal;
+            }
+
             // --- FUNGSI EKSPOR PDF & EXCEL LAINNYA ---
             function drawPdfHeader(doc, schoolProfile) {
                 const logoKiri = localStorage.getItem('schoolLogoLeft');
@@ -2786,6 +2797,9 @@
                 yPos += 7;
                 doc.setFontSize(16);
                 doc.text(schoolProfile.namaSekolah || 'NAMA SEKOLAH', pageWidth / 2, yPos, { align: 'center' });
+                yPos += 6;
+                doc.setFontSize(14);
+                doc.text('BIMBINGAN DAN KONSELING', pageWidth / 2, yPos, { align: 'center' });
                 yPos += 7;
                 doc.setFontSize(10);
                 doc.setFont('helvetica', 'normal');
