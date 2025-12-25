@@ -1323,7 +1323,10 @@
                     data.kelasAsuh.forEach(item => {
                         const div = document.createElement('div');
                         div.className = 'bg-slate-700 p-2 rounded-md text-sm';
-                        div.innerHTML = `<span class="font-semibold text-slate-200">${item.kelas}:</span> <span class="text-slate-300">${item.wali || 'Belum diisi'}</span>`;
+                        // Update tampilan display untuk menampilkan NIP
+                        div.innerHTML = `<span class="font-semibold text-slate-200 block">${item.kelas}</span> 
+                                         <span class="text-slate-300 block">Wali: ${item.wali || '-'}</span>
+                                         <span class="text-slate-400 text-xs block">NIP: ${item.nip || '-'}</span>`;
                         listContainer.appendChild(div);
                     });
                 } else {
@@ -1347,11 +1350,15 @@
                 listContainer.innerHTML = '';
                 kelasAsuhData.forEach((item, index) => {
                     const div = document.createElement('div');
-                    div.className = 'flex items-center space-x-2 bg-slate-700 p-2 rounded-md';
+                    // Ubah layout menjadi flex column/row agar muat input NIP
+                    div.className = 'flex flex-col sm:flex-row sm:items-center gap-2 bg-slate-700 p-2 rounded-md';
                     div.innerHTML = `
-                        <span class="text-sm font-medium text-slate-200 flex-1">${item.kelas}</span>
-                        <input type="text" placeholder="Nama Wali Kelas" class="wali-kelas-input block w-full flex-2 rounded-md border-slate-600 bg-slate-900 text-slate-200 p-1.5 border text-sm" value="${item.wali || ''}" data-index="${index}">
-                        <button type="button" class="delete-kelas-btn text-xl font-bold text-rose-500 hover:text-rose-400" data-index="${index}">&times;</button>
+                        <span class="text-sm font-medium text-slate-200 w-full sm:w-16">${item.kelas}</span>
+                        <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
+                            <input type="text" placeholder="Nama Wali Kelas" class="wali-kelas-input block w-full rounded-md border-slate-600 bg-slate-900 text-slate-200 p-1.5 border text-sm" value="${item.wali || ''}" data-index="${index}">
+                            <input type="text" placeholder="NIP Wali Kelas" class="wali-kelas-nip-input block w-full rounded-md border-slate-600 bg-slate-900 text-slate-200 p-1.5 border text-sm" value="${item.nip || ''}" data-index="${index}">
+                        </div>
+                        <button type="button" class="delete-kelas-btn text-xl font-bold text-rose-500 hover:text-rose-400 self-end sm:self-center" data-index="${index}">&times;</button>
                     `;
                     listContainer.appendChild(div);
                 });
@@ -1456,7 +1463,8 @@
                 const input = document.getElementById('kelasAsuhInput');
                 const className = input.value.trim().toUpperCase();
                 if (className && !kelasAsuhData.some(item => item.kelas === className)) {
-                    kelasAsuhData.push({ kelas: className, wali: '' });
+                    // Tambahkan properti nip kosong saat inisialisasi
+                    kelasAsuhData.push({ kelas: className, wali: '', nip: '' });
                     renderKelasAsuhList();
                     input.value = '';
                     input.focus();
@@ -3168,6 +3176,9 @@
                 if(!mail) return;
                 const student = getStudents().find(s => s.id == mail.studentId) || {};
                 const schoolProfile = JSON.parse(localStorage.getItem('schoolProfile')) || {};
+                // Cari data kelas asuh untuk mendapatkan NIP Wali Kelas
+                const kelasAsuhInfo = (schoolProfile.kelasAsuh || []).find(k => k.kelas === student.kelas) || {};
+                
                 const doc = new jsPDF();
                 let yPos = drawPdfHeader(doc, schoolProfile);
 
@@ -3237,12 +3248,19 @@
 
                 // Nama Wali Kelas (kiri)
                 doc.setFont('helvetica', 'bold');
-                doc.text(mail.namaWaliKelas || '(.......................................)', signXLeft, currentY, { align: 'center' });
+                doc.text(mail.namaWaliKelas || kelasAsuhInfo.wali || '(.......................................)', signXLeft, currentY, { align: 'center' });
 
                 // Nama Guru BK (kanan)
                 doc.text(schoolProfile.namaGuruBk || '(.......................................)', signXRight, currentY, { align: 'center' });
+                
+                // NIP (Baris Baru)
                 currentY += 5;
                 doc.setFont('helvetica', 'normal');
+                
+                // NIP Wali Kelas
+                doc.text(`NIP. ${kelasAsuhInfo.nip || '-'}`, signXLeft, currentY, { align: 'center' });
+                
+                // NIP Guru BK
                 doc.text(`NIP. ${schoolProfile.nipGuruBk || '-'}`, signXRight, currentY, { align: 'center' });
 
                 doc.save(`Surat_Panggilan_${student.namaSiswa}.pdf`);
@@ -3310,8 +3328,15 @@
                 
                 // Nama Guru BK (kanan)
                 doc.text(schoolProfile.namaGuruBk || '(.......................................)', signXRight, currentY, { align: 'center' });
+                
+                // NIP (Baris Baru)
                 currentY += 5;
                 doc.setFont('helvetica', 'normal');
+                
+                // NIP Wali Kelas
+                doc.text(`NIP. ${kelasAsuhInfo.nip || '-'}`, signXLeft, currentY, { align: 'center' });
+                
+                // NIP Guru BK
                 doc.text(`NIP. ${schoolProfile.nipGuruBk || '-'}`, signXRight, currentY, { align: 'center' });
 
 
@@ -4330,7 +4355,16 @@
                 document.getElementById('addSemesterButton').addEventListener('click', addSemester);
                 document.getElementById('kelasAsuhList').addEventListener('click', e => { if (e.target.classList.contains('delete-kelas-btn')) { deleteKelasAsuh(e.target.dataset.index); } });
                 document.getElementById('semesterList').addEventListener('click', e => { if (e.target.classList.contains('delete-semester-btn')) { deleteSemester(e.target.dataset.index); } });
-                document.getElementById('kelasAsuhList').addEventListener('input', e => { if (e.target.classList.contains('wali-kelas-input')) { kelasAsuhData[e.target.dataset.index].wali = e.target.value; } });
+                
+                // Update listener input kelas asuh untuk menangani input Nama dan NIP
+                document.getElementById('kelasAsuhList').addEventListener('input', e => { 
+                    if (e.target.classList.contains('wali-kelas-input')) { 
+                        kelasAsuhData[e.target.dataset.index].wali = e.target.value; 
+                    }
+                    if (e.target.classList.contains('wali-kelas-nip-input')) { 
+                        kelasAsuhData[e.target.dataset.index].nip = e.target.value; 
+                    } 
+                });
 
                 // Listeners Profil Siswa
                 document.getElementById('studentProfileForm').addEventListener('submit', handleStudentFormSubmit);
@@ -4666,10 +4700,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
